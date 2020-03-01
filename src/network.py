@@ -11,14 +11,15 @@ class Network:
     def __init__(self,
                  input_size: int,
                  layers: List[Tuple[int, Activation, bool]],
-                 error_fun: Error):
+                 error_fun: Error,
+                 seed: int = None):
 
         self.layers = []
         for i in range(len(layers)):
             if i == 0:
-                self.layers.append(MLP(input_size, layers[i][0], layers[i][1], layers[i][2]))
+                self.layers.append(MLP(input_size, layers[i][0], layers[i][1], layers[i][2], seed))
             else:
-                self.layers.append(MLP(layers[i-1][0], layers[i][0], layers[i][1], layers[i][2]))
+                self.layers.append(MLP(layers[i-1][0], layers[i][0], layers[i][1], layers[i][2], seed))
         self.error_fun = error_fun
 
     def predict(self,
