@@ -7,6 +7,7 @@ from src.error import Error
 from src.linear_activation import LinearActivation
 from src.log_error import LogError
 from src.mean_absolute_error import MeanAbsoluteError
+from src.mean_squared_error import MeanSquaredError
 from src.mlp import MLP
 from src.sigmoid_activation import SigmoidActivation
 
@@ -51,6 +52,8 @@ def compared_to_keras(batch_size: int,
         loss_function_name = "mean_absolute_error"
     elif isinstance(loss_function, LogError):
         loss_function_name = "binary_crossentropy"
+    elif isinstance(loss_function, MeanSquaredError):
+        loss_function_name = "mean_squared_error"
     else:
         raise RuntimeError("Unknown loss function!")
 
@@ -101,4 +104,3 @@ def compared_to_keras(batch_size: int,
 
     # equal input derivatives
     dx = get_layer_output_grad(model, x, y)  # TODO
-    print("a")  # TODO usunąć przed commitem
