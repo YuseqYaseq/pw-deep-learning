@@ -1,7 +1,7 @@
 import numpy as np
 
-from activation import Activation
-from layer import Layer
+from src.activation import Activation
+from src.layer import Layer
 
 
 class MLP(Layer):
@@ -12,9 +12,11 @@ class MLP(Layer):
                  bias: bool,
                  seed: int = None):
         np.random.seed(seed)
-        self.w = np.random.rand(size_in, size_out)
+        self.w = np.random.rand(size_in, size_out) - 0.5
         if bias:
-            self.b = np.random.rand(1, size_out)
+            self.b = np.random.rand(1, size_out) - 0.5
+        else:
+            self.b = None
 
         self.a = activation
 
@@ -34,10 +36,11 @@ class MLP(Layer):
 
     def backward(self,
                  prev_error: np.ndarray):
-        self.dw = np.dot(prev_error, self.last_x.T)
+        prev_error = self.a.backward(prev_error)
+        self.dw = np.dot(self.last_x.T, prev_error) / (self.last_x.shape[0] * self.w.shape[1])
         if self.b is not None:
-            self.db = prev_error
-        return np.dot(prev_error, self.w.T)
+            self.db = np.average(prev_error / self.b.shape[1], axis=0)
+        return np.dot(prev_error, self.w.T) / (self.last_x.shape[0] * self.w.shape[1])
 
     def update_parameters(self,
                           alpha: float):

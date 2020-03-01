@@ -1,4 +1,4 @@
-from activation import Activation
+from src.activation import Activation
 import numpy as np
 
 
