@@ -30,7 +30,13 @@ class Network:
     def fit(self,
             x: np.ndarray,
             y: np.ndarray,
-            alpha: float):
+            alpha: float,
+            batch_size: int = 32):
+        if y.shape[0] > batch_size:
+            idx = np.random.choice(range(y.shape[0]), batch_size, replace=False)
+            x = x[idx, :]
+            y = y[idx, :]
+
         out = self.predict(x)
         loss = self.error_fun.get_error(out, y)
         derivative = self.error_fun.get_derivative()
