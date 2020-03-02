@@ -33,6 +33,16 @@ class Network:
             y: np.ndarray,
             alpha: float,
             batch_size: int = 32):
+        loss = self.evaluate(x, y, batch_size)
+        for layer in self.layers:
+            layer.update_parameters(alpha)
+        return loss
+
+    def evaluate(self,
+                 x: np.ndarray,
+                 y: np.ndarray,
+                 batch_size: int = 32):
+
         if y.shape[0] > batch_size:
             idx = np.random.choice(range(y.shape[0]), batch_size, replace=False)
             x = x[idx, :]
@@ -43,6 +53,4 @@ class Network:
         derivative = self.error_fun.get_derivative()
         for layer in list(reversed(self.layers)):
             derivative = layer.backward(derivative)
-        for layer in self.layers:
-            layer.update_parameters(alpha)
         return loss
