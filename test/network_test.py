@@ -12,7 +12,7 @@ def test_networks():
 
     input_size = 20
     output_size = 3
-    batch_size = 1
+    batch_size = 5
     eps_decimal = 4
     seed = 1
     layers = [(10, SigmoidActivation(), True),

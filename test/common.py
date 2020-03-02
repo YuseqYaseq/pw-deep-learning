@@ -9,6 +9,7 @@ from src.log_error import LogError
 from src.mean_absolute_error import MeanAbsoluteError
 from src.mean_squared_error import MeanSquaredError
 from src.mlp import MLP
+from src.relu_activation import ReLUActivation
 from src.sigmoid_activation import SigmoidActivation
 
 
@@ -45,6 +46,8 @@ def compared_to_keras(batch_size: int,
         activation_name = "sigmoid"
     elif isinstance(activation, LinearActivation):
         activation_name = "linear"
+    elif isinstance(activation, ReLUActivation):
+        activation_name = "relu"
     else:
         raise RuntimeError("Unknown activation function!")
 
@@ -91,6 +94,7 @@ def compared_to_keras(batch_size: int,
     np.testing.assert_almost_equal(loss, loss2, decimal=eps_decimal)
 
     # equal weights and biases derivatives
+    mlp.backward(loss_function.get_derivative())
     if bias:
         [dw, db] = get_weight_grad(model, x, y)
         np.testing.assert_almost_equal(db, mlp.db, decimal=eps_decimal)
