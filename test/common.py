@@ -90,9 +90,6 @@ def compared_to_keras(batch_size: int,
     # equal loss
     np.testing.assert_almost_equal(loss, loss2, decimal=eps_decimal)
 
-    derivative = loss_function.get_derivative()
-    mlp.backward(derivative)
-
     # equal weights and biases derivatives
     if bias:
         [dw, db] = get_weight_grad(model, x, y)
@@ -101,6 +98,3 @@ def compared_to_keras(batch_size: int,
     else:
         [dw] = get_weight_grad(model, x, y)
         np.testing.assert_almost_equal(dw, mlp.dw, decimal=eps_decimal)
-
-    # equal input derivatives
-    dx = get_layer_output_grad(model, x, y)  # TODO
