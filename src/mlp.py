@@ -40,7 +40,7 @@ class MLP(Layer):
         self.dw = np.dot(self.last_x.T, prev_error) / (self.last_x.shape[0] * self.w.shape[1])
         if self.b is not None:
             self.db = np.average(prev_error / self.b.shape[1], axis=0)
-        return np.dot(prev_error, self.w.T) / (self.last_x.shape[0] * self.w.shape[1])
+        return np.dot(prev_error, self.w.T) * self.w.shape[0] / self.w.shape[1]
 
     def update_parameters(self,
                           alpha: float):
