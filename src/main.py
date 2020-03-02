@@ -1,5 +1,6 @@
 import numpy as np
 
+from src.log_error import LogError
 from src.mean_absolute_error import MeanAbsoluteError
 from src.network import Network
 from src.linear_activation import LinearActivation
@@ -11,12 +12,15 @@ def main():
     input_size: int = 20
     output_size: int = 3
     alpha: float = 0.01
+    seed: int = 5
+
+    # (number of neurons, activation function, use bias)
     layers = [(50, SigmoidActivation(), True),
               (10, SigmoidActivation(), True),
               (3, LinearActivation(), True)]
 
     error = MeanAbsoluteError()
-    network = Network(input_size, layers, error)
+    network = Network(input_size, layers, error, seed)
 
     x = np.random.rand(batch_size, input_size)
     y = np.random.rand(batch_size, output_size)
