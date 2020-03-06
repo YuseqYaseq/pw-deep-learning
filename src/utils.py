@@ -7,10 +7,18 @@ from matplotlib import pyplot as plt
 
 def split_dataset(train_df: pd.DataFrame, 
                   fraction: float = 0.2):
+
+    #permute all samples
+    train_df = train_df.sample(frac=1.0)
+
+    #set validation fraction
     fraction = 0.2
+
     split_index = int(fraction*len(train_df))
+
     valid_df = train_df.iloc[:split_index]
     train_df = train_df.iloc[split_index:]
+
     return train_df, valid_df
 
 
@@ -22,9 +30,8 @@ def train_net( net: Network,
                multiclass: bool = False):
     
     train_df, valid_df = split_dataset(dataset, 0.2)
-
-    train_y_df = pd.get_dummies(train_df['cls']) if multiclass else train_df['cls']
-    valid_y_df = pd.get_dummies(valid_df['cls']) if multiclass else valid_df['cls']
+    train_y_df = pd.get_dummies(train_df['cls'], dtype=float) if multiclass else train_df['cls']
+    valid_y_df = pd.get_dummies(valid_df['cls'], dtype=float) if multiclass else valid_df['cls']
 
     y_dim = train_y_df.shape[1] if multiclass else 1
 
@@ -33,17 +40,16 @@ def train_net( net: Network,
     for epoch in range(max_epochs):
         train_loss = 0
         validation_loss = 0
-        for i in range(0, len(train_df-batch_size), batch_size):
+        for i in range(0, len(train_df)-batch_size, batch_size):
             x = np.array(train_df.iloc[i:i+batch_size, :-1])
-            y = np.reshape(np.array(train_y_df.iloc[i:i+batch_size]), (x.shape[0], y_dim))
-            loss = net.fit(x, y, learning_rate, x.shape[0])
+            y = np.reshape(np.array(train_y_df.iloc[i:i+batch_size, :]), (batch_size, y_dim))
+            loss = net.fit(x, y, learning_rate, batch_size)
             train_loss +=loss
-        
 
-        for i in range(0, len(valid_df-batch_size), batch_size):
+        for i in range(0, len(valid_df)-batch_size, batch_size):
             x = np.array(valid_df.iloc[i:i+batch_size, :-1])
-            y = np.reshape(np.array(valid_y_df.iloc[i:i+batch_size]), (x.shape[0], y_dim))
-            loss = net.validate(x, y, learning_rate, x.shape[0])
+            y = np.reshape(np.array(valid_y_df.iloc[i:i+batch_size, :]), (batch_size, y_dim))
+            loss = net.validate(x, y, learning_rate, batch_size)
             validation_loss +=loss
 
         train_losses.append(train_loss/len(train_df))
