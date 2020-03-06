@@ -42,13 +42,13 @@ def train_net( net: Network,
         validation_loss = 0
         for i in range(0, len(train_df)-batch_size, batch_size):
             x = np.array(train_df.iloc[i:i+batch_size, :-1])
-            y = np.reshape(np.array(train_y_df.iloc[i:i+batch_size, :]), (batch_size, y_dim))
+            y = np.reshape(np.array(train_y_df.iloc[i:i+batch_size]), (batch_size, y_dim))
             loss = net.fit(x, y, learning_rate, batch_size)
             train_loss +=loss
 
         for i in range(0, len(valid_df)-batch_size, batch_size):
             x = np.array(valid_df.iloc[i:i+batch_size, :-1])
-            y = np.reshape(np.array(valid_y_df.iloc[i:i+batch_size, :]), (batch_size, y_dim))
+            y = np.reshape(np.array(valid_y_df.iloc[i:i+batch_size]), (batch_size, y_dim))
             loss = net.validate(x, y, learning_rate, batch_size)
             validation_loss +=loss
 
