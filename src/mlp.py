@@ -47,3 +47,6 @@ class MLP(Layer):
         self.w -= alpha * self.dw
         if self.b is not None:
             self.b -= alpha * self.db
+
+    def __repr__(self):
+        return 'Layer({}, bias={}, {})'.format(self.w.shape, False if self.b is None else True, self.a)

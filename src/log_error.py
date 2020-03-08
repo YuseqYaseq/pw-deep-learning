@@ -18,3 +18,6 @@ class LogError(Error):
     def get_derivative(self):
         error_derivative = -(self.y - self.out) / ((1 - self.out) * self.out)
         return error_derivative
+    
+    def __repr__(self):
+        return '<LogError>'

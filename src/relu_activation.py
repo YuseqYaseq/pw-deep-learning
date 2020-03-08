@@ -19,3 +19,6 @@ class ReLUActivation(Activation):
         res = prev_error.copy()
         res[self.last_x < 0] = 0
         return res
+
+    def __repr__(self):
+        return '<ReLUActivation>'

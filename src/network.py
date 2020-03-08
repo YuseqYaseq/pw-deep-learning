@@ -68,3 +68,6 @@ class Network:
         out = self.predict(x)
         loss = self.error_fun.get_error(out, y)
         return loss
+        
+    def __repr__(self):
+        return 'Network({}, {})'.format(self.layers, self.error_fun)
