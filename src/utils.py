@@ -22,7 +22,16 @@ def split_dataset(train_df: pd.DataFrame,
     return train_df, valid_df
 
 
-def train_net( net: Network,
+def get_normalisation_scale(df: pd.DataFrame):
+    return (df.min(), df.max())
+
+def normalized_dataset(df: pd.DataFrame, 
+                      df_min: pd.Series, 
+                      df_max: pd.Series):
+    return (df-df_min)/(df_max - df_min)
+
+
+def train_classification( net: Network,
                dataset: pd.DataFrame,
                max_epochs: int,
                learning_rate: float,
@@ -57,9 +66,38 @@ def train_net( net: Network,
     return train_losses, validation_losses
 
 
+def train_regression(net: Network,
+                     dataset: pd.DataFrame,
+                     max_epochs: int,
+                     learning_rate: float,
+                     batch_size: int = 1):
+
+    train_df, valid_df = split_dataset(dataset, 0.2)
+
+    train_losses = []
+    validation_losses = []
+    for epoch in range(max_epochs):
+        train_loss = 0
+        validation_loss = 0
+        for i in range(0, len(train_df)-batch_size, batch_size):
+            x = np.array(train_df.iloc[i:i+batch_size, :-1])
+            y = np.reshape(np.array(train_df.iloc[i:i+batch_size, -1]), (batch_size, 1))
+            loss = net.fit(x, y, learning_rate, batch_size)
+            train_loss +=loss
+
+        for i in range(0, len(valid_df)-batch_size, batch_size):
+            x = np.array(valid_df.iloc[i:i+batch_size, :-1])
+            y = np.reshape(np.array(valid_df.iloc[i:i+batch_size, -1]), (batch_size, 1))
+            loss = net.validate(x, y, learning_rate, batch_size)
+            validation_loss +=loss
+
+        train_losses.append(train_loss/len(train_df))
+        validation_losses.append(validation_loss/len(valid_df))
+    return train_losses, validation_losses
+
 def plot_loss(train_losses, validation_losses):
     plt.plot(train_losses, label='train loss')
-    plt.annotate('%0.4f' % train_losses[-1], xy=(1, train_losses[-1]), xytext=(20, 6), 
+    plt.annotate('%0.4f' % train_losses[-1], xy=(1, train_losses[-1]), xytext=(20, 0), 
                  xycoords=('axes fraction', 'data'), textcoords='offset points',
                  arrowprops=dict(arrowstyle= '-')
               )
@@ -101,3 +139,16 @@ def plot_decision_boundary(network: Network,
     plt.scatter(test_df['x'], test_df['y'], c=test_df['cls'], cmap=plt.cm.viridis)
     
 
+def plot_regression(network: Network,
+                    test_df: pd.DataFrame,
+                    num: float = 100):
+    x_min, x_max = test_df['x'].min(), test_df['x'].max()
+
+    xx = np.linspace(x_min, x_max, num)
+
+    Z = np.zeros(xx.ravel().shape)
+    for i, x  in enumerate(xx.ravel()):
+        Z[i] = network.predict(np.array([[x]]))
+        
+    plt.plot(xx, Z, c='red')
+    plt.scatter(test_df['x'], test_df['y'], c='blue')
