@@ -29,7 +29,11 @@ def get_normalisation_scale(df: pd.DataFrame):
     """
     Get normalization scales. Used later in normalize_dataset().
     """
-    return (df.min(), df.max())
+
+    # don't scale last column (class label)
+    without_last_column = df.iloc[:, :-1]
+
+    return (without_last_column.min(), without_last_column.max())
 
 def normalized_dataset(df: pd.DataFrame, 
                       df_min: pd.Series, 
@@ -37,7 +41,11 @@ def normalized_dataset(df: pd.DataFrame,
     """
     Normalize dataset using calculated min and max values from get_normalisation_scale().
     """
-    return (df-df_min)/(df_max - df_min)
+
+    # don't modify last column (class label)
+    tmp_df = (df.iloc[:,-1]-df_min)/(df_max - df_min)
+    tmp_df['cls'] = df['cls']
+    return  tmp_df
 
 
 def train_classification( net: Network,
@@ -54,8 +62,8 @@ def train_classification( net: Network,
     """
     
     train_df, valid_df = split_dataset(dataset, 0.2)
-    train_y_df = pd.get_dummies(train_df['cls'], dtype=float) if multiclass else train_df['cls']
-    valid_y_df = pd.get_dummies(valid_df['cls'], dtype=float) if multiclass else valid_df['cls']
+    train_y_df = pd.get_dummies(train_df['cls'], dtype=float) if multiclass else train_df['cls'] - 1.0
+    valid_y_df = pd.get_dummies(valid_df['cls'], dtype=float) if multiclass else valid_df['cls'] - 1.0
 
     y_dim = train_y_df.shape[1] if multiclass else 1
 
