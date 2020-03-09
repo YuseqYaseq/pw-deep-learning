@@ -7,6 +7,9 @@ from matplotlib import pyplot as plt
 
 def split_dataset(train_df: pd.DataFrame, 
                   fraction: float = 0.2):
+    """
+    Split train data into train and validation.
+    """
 
     #permute all samples
     train_df = train_df.sample(frac=1.0)
@@ -23,11 +26,17 @@ def split_dataset(train_df: pd.DataFrame,
 
 
 def get_normalisation_scale(df: pd.DataFrame):
+    """
+    Get normalization scales. Used later in normalize_dataset().
+    """
     return (df.min(), df.max())
 
 def normalized_dataset(df: pd.DataFrame, 
                       df_min: pd.Series, 
                       df_max: pd.Series):
+    """
+    Normalize dataset using calculated min and max values from get_normalisation_scale().
+    """
     return (df-df_min)/(df_max - df_min)
 
 
@@ -37,6 +46,12 @@ def train_classification( net: Network,
                learning_rate: float,
                batch_size: int = 1,
                multiclass: bool = False):
+    """
+    Train net for a classification task.
+    The dataset consists of features and class label (in the last column).
+
+    If the multiclass is True, uses one-hot encoding.
+    """
     
     train_df, valid_df = split_dataset(dataset, 0.2)
     train_y_df = pd.get_dummies(train_df['cls'], dtype=float) if multiclass else train_df['cls']
@@ -71,7 +86,10 @@ def train_regression(net: Network,
                      max_epochs: int,
                      learning_rate: float,
                      batch_size: int = 1):
-
+    """
+    Train net for a regression task.
+    The dataset consists of features and regression value (in the last column).
+    """
     train_df, valid_df = split_dataset(dataset, 0.2)
 
     train_losses = []
@@ -96,6 +114,9 @@ def train_regression(net: Network,
     return train_losses, validation_losses
 
 def plot_loss(train_losses, validation_losses):
+    """
+    Plots train and validation losses.
+    """
     plt.plot(train_losses, label='train loss')
     plt.annotate('%0.4f' % train_losses[-1], xy=(1, train_losses[-1]), xytext=(20, 0), 
                  xycoords=('axes fraction', 'data'), textcoords='offset points',
@@ -116,6 +137,10 @@ def plot_loss(train_losses, validation_losses):
 def plot_decision_boundary(network: Network,
                            test_df: pd.DataFrame,
                            h: float = .02):
+    """
+    Plots decision boundary of the classifier.
+    h - spacing in a meshgrid.
+    """
     
     x_min, x_max = test_df['x'].min(), test_df['x'].max()
     y_min, y_max = test_df['y'].min(), test_df['y'].max()
@@ -137,11 +162,16 @@ def plot_decision_boundary(network: Network,
     plt.contourf(xx, yy, Z, cmap=plt.cm.coolwarm)
     #plt.axis('off')
     plt.scatter(test_df['x'], test_df['y'], c=test_df['cls'], cmap=plt.cm.viridis)
+    plt.show()
     
 
 def plot_regression(network: Network,
                     test_df: pd.DataFrame,
                     num: float = 100):
+    """
+    Plot regression line of the network on top of the test data.
+    num - number of points evaluated.
+    """
     x_min, x_max = test_df['x'].min(), test_df['x'].max()
 
     xx = np.linspace(x_min, x_max, num)
@@ -152,3 +182,4 @@ def plot_regression(network: Network,
         
     plt.plot(xx, Z, c='red')
     plt.scatter(test_df['x'], test_df['y'], c='blue')
+    plt.show()
