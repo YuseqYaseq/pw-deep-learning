@@ -13,11 +13,17 @@ class LogError(Error):
                   y: np.ndarray):
         self.out = out
         self.y = y
-        return np.average(-y*np.log(out) - (1 - y) * np.log(1 - out))
+        with np.errstate(divide='ignore', invalid='ignore'):
+            calc = -y*np.log(out) - (1.0 - y) * np.log(1 - out)
+            calc[np.isnan(calc)] = 0.0
+            return np.average(calc)
 
     def get_derivative(self):
-        error_derivative = -(self.y - self.out) / ((1 - self.out) * self.out)
-        return error_derivative
-    
-    def __repr__(self):
+
+        with np.errstate(divide='ignore', invalid='ignore'):
+            error_derivative = -(self.y - self.out) / ((1.0 - self.out) * self.out)
+            error_derivative[np.isnan(error_derivative)] = 0.0
+            return error_derivative
+            
+     def __repr__(self):
         return '<LogError>'
