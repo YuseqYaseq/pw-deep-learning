@@ -167,9 +167,9 @@ def plot_decision_boundary(network: Network,
     #print(Z)
     Z = Z.reshape(xx.shape)
     #print(Z)
-    plt.contourf(xx, yy, Z, cmap=plt.cm.coolwarm)
     #plt.axis('off')
-    plt.scatter(test_df['x'], test_df['y'], c=test_df['cls'], cmap=plt.cm.viridis)
+    plt.scatter(test_df['x'], test_df['y'], c=test_df['cls'], cmap=plt.cm.viridis, alpha=0.9)
+    plt.contourf(xx, yy, Z, cmap=plt.cm.coolwarm, alpha=0.2)
     plt.show()
     
 
