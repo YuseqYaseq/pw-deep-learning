@@ -1,4 +1,5 @@
 from src.network import Network
+import src.VisualizeNN as VisNN
 
 import pandas as pd
 import numpy as np
@@ -64,7 +65,6 @@ def train_classification( net: Network,
     train_df, valid_df = split_dataset(dataset, 0.2)
     train_y_df = pd.get_dummies(train_df['cls'], dtype=float) if multiclass else train_df['cls'] - 1.0
     valid_y_df = pd.get_dummies(valid_df['cls'], dtype=float) if multiclass else valid_df['cls'] - 1.0
-
     y_dim = train_y_df.shape[1] if multiclass else 1
 
     train_losses = []
@@ -152,23 +152,22 @@ def plot_decision_boundary(network: Network,
     
     x_min, x_max = test_df['x'].min(), test_df['x'].max()
     y_min, y_max = test_df['y'].min(), test_df['y'].max()
-
+    
     xx, yy = np.meshgrid(np.arange(x_min, x_max, h),
                         np.arange(y_min, y_max, h))
 
     Z = np.zeros(xx.ravel().shape)
     for i, (x, y) in enumerate(zip(xx.ravel(), yy.ravel())):
         z = network.predict(np.array([[x, y]]))
-        #print(z.shape)
         if (z.shape[1] == 1):
             Z[i]  = 0 if z < 0.5 else 1
         else:
             Z[i] = np.argmax(z, axis=1)
-    #print(Z)
     Z = Z.reshape(xx.shape)
-    #print(Z)
-    #plt.axis('off')
-    plt.scatter(test_df['x'], test_df['y'], c=test_df['cls'], cmap=plt.cm.viridis, alpha=0.9)
+    if z.shape[1] == 1:
+        plt.scatter(test_df['x'], test_df['y'], c=test_df['cls'], cmap=plt.cm.viridis, alpha=0.9)
+    else:
+        plt.scatter(test_df['x'], test_df['y'], c=test_df['cls'], cmap=plt.cm.Dark2, alpha=0.9)
     plt.contourf(xx, yy, Z, cmap=plt.cm.coolwarm, alpha=0.2)
     plt.show()
     
@@ -191,3 +190,21 @@ def plot_regression(network: Network,
     plt.plot(xx, Z, c='red')
     plt.scatter(test_df['x'], test_df['y'], c='blue')
     plt.show()
+
+def draw_weights(network: Network):
+    w_max = 0
+    w_min = 0
+    dims = []
+    for l in network.layers:
+        dims.append(l.w.shape[0])
+        w_max = max(w_max, np.max(l.w))
+        w_min = min(w_min, np.min(l.w))
+    dims.append(l.w.shape[1])
+
+    weights = []
+    for l in network.layers:
+        weights.append((l.w - w_min) /(w_max - w_min))
+
+    v = VisNN.DrawNN(dims, weights)
+    v.draw()
+    
