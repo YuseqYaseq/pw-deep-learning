@@ -17,7 +17,7 @@ class Neuron():
     def draw(self, neuron_radius, id=-1):
         circle = pyplot.Circle((self.x, self.y), radius=neuron_radius, fill=False)
         pyplot.gca().add_patch(circle)
-        pyplot.gca().text(self.x, self.y-0.15, str(id), size=10, ha='center')
+        pyplot.gca().text(self.x, self.y-0.15, 'Bias' if id is None else str(id), size=10, ha='center')
 
 class Layer():
     def __init__(self, network, number_of_neurons, number_of_neurons_in_widest_layer):
@@ -89,14 +89,15 @@ class Layer():
             a.set_bbox(dict(facecolor='white', alpha=0))
             # print(a.get_bbox_patch().get_height())
 
-        line = pyplot.Line2D((neuron1.x - x_adjustment, neuron2.x + x_adjustment), (neuron1.y - y_adjustment, neuron2.y + y_adjustment), linewidth=linewidth, color=pyplot.cm.coolwarm(abs_weight), alpha=0.8)
-        pyplot.gca().add_line(line)
+        if abs_weight > 0.1:
+            line = pyplot.Line2D((neuron1.x - x_adjustment, neuron2.x + x_adjustment), (neuron1.y - y_adjustment, neuron2.y + y_adjustment), linewidth=linewidth, color=pyplot.cm.coolwarm(weight), alpha=0.8)
+            pyplot.gca().add_line(line)
 
     def draw(self, layerType=0, weights=None, textoverlaphandler=None):
         j=0 # index for neurons in this layer
         for neuron in self.neurons:            
             i=0 # index for neurons in previous layer
-            neuron.draw( self.neuron_radius, id=j+1 )
+            neuron.draw( self.neuron_radius, id=(j+1 if (j+1<len(self.neurons) or layerType == -1) else None))
             if self.previous_layer:
                 for previous_layer_neuron in self.previous_layer.neurons:
                     self.__line_between_two_neurons(neuron, previous_layer_neuron, weights[i,j], textoverlaphandler)
@@ -188,7 +189,7 @@ class DrawNN():
                 tempArr = np.ones((first, second))*0.4
                 weights_list.append(tempArr)
             self.weights_list = weights_list
-        print([w.shape for w in self.weights_list])
+        print([w.shape for w in self.weights_list], self.neural_network)
         
     def draw( self ):
         widest_layer = max( self.neural_network )

@@ -195,16 +195,28 @@ def draw_weights(network: Network):
     w_max = 0
     w_min = 0
     dims = []
-    for l in network.layers:
-        dims.append(l.w.shape[0])
-        w_max = max(w_max, np.max(l.w))
-        w_min = min(w_min, np.min(l.w))
+
+    for l in network.layers:     
+        if l.b is None:
+            dims.append(l.w.shape[0])
+            w_max = max(w_max, np.max(l.w))
+            w_min = min(w_min, np.min(l.w))
+        else:
+            dims.append(l.w.shape[0] + 1)
+            w_max = max(w_max, np.max(l.b), np.max(l.w))
+            w_min = min(w_min, np.min(l.b), np.min(l.w))
+        
     dims.append(l.w.shape[1])
 
     weights = []
     for l in network.layers:
-        weights.append((l.w - w_min) /(w_max - w_min))
-
+        if l.b is None:
+            weights.append(2*((l.w- w_min) /(w_max - w_min)) -1)
+            #weights.append(2*((np.concatenate([l.w, np.zeros((1, l.w.shape[1]))+w_min]) - w_min) /(w_max - w_min)) -1)          
+        else:
+            weights.append(2*((np.concatenate([np.concatenate([l.w, l.b]), np.zeros((l.w.shape[0] + 1, 1))], axis=1) - w_min) /(w_max - w_min))-1)
+    for w in weights:
+        print(w.shape)
     v = VisNN.DrawNN(dims, weights)
     v.draw()
     
