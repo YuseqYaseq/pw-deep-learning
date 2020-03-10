@@ -12,9 +12,9 @@ class MLP(Layer):
                  bias: bool,
                  seed: int = None):
         np.random.seed(seed)
-        self.w = np.random.rand(size_in, size_out) - 0.5
+        self.w = np.random.randn(size_in, size_out) * np.sqrt(2 / (size_in + size_out))
         if bias:
-            self.b = np.random.rand(1, size_out) - 0.5
+            self.b = np.random.randn(1, size_out) * np.sqrt(1 / size_out)
         else:
             self.b = None
 
