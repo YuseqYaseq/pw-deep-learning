@@ -54,6 +54,17 @@ class Network:
         for layer in list(reversed(self.layers)):
             derivative = layer.backward(derivative)
         return loss
+
+    def clear_tmp_values(self):
+        for attr in self.error_fun.__dir__():
+            delattr(self.error_fun, attr)
+        for layer in self.layers:
+            layer.dw = None
+            layer.db = None
+            layer.last_x = None
+            layer.activated_w = None
+            for attr in layer.a.__dir__():
+                delattr(layer.a, attr)
         
     def validate(self,
                  x: np.ndarray,

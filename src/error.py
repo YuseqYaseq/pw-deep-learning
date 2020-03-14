@@ -13,3 +13,7 @@ class Error(ABC):
     @abstractmethod
     def get_derivative(self):
         pass
+
+    @abstractmethod
+    def __dir__(self):
+        pass

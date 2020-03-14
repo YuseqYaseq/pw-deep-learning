@@ -25,5 +25,8 @@ class LogError(Error):
             error_derivative[np.isnan(error_derivative)] = 0.0
             return error_derivative
 
+    def __dir__(self):
+        return ['out', 'y']
+
     def __repr__(self):
         return '<LogError>'

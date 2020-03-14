@@ -20,5 +20,8 @@ class ReLUActivation(Activation):
         res[self.last_x < 0] = 0
         return res
 
+    def __dir__(self):
+        return ['last_x']
+
     def __repr__(self):
         return '<ReLUActivation>'

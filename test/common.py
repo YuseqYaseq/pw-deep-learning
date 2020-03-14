@@ -11,6 +11,7 @@ from src.mean_squared_error import MeanSquaredError
 from src.mlp import MLP
 from src.relu_activation import ReLUActivation
 from src.sigmoid_activation import SigmoidActivation
+from src.softmax_activation import SoftmaxActivation
 
 
 def get_weight_grad(model, inputs, outputs):
@@ -48,6 +49,8 @@ def compared_to_keras(batch_size: int,
         activation_name = "linear"
     elif isinstance(activation, ReLUActivation):
         activation_name = "relu"
+    elif isinstance(activation, SoftmaxActivation):
+        activation_name = "softmax"
     else:
         raise RuntimeError("Unknown activation function!")
 

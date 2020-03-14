@@ -19,6 +19,9 @@ class MeanAbsoluteError(Error):
         error_derivative = (self.out > self.y).astype(np.float32)
         error_derivative[error_derivative == 0] = -1
         return error_derivative
+
+    def __dir__(self):
+        return ['out', 'y']
     
     def __repr__(self):
         return '<MeanAbsoluteError>'
