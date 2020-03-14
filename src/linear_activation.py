@@ -12,5 +12,8 @@ class LinearActivation(Activation):
                  prev_error: np.ndarray):
         return prev_error
 
+    def __dir__(self):
+        return []
+    
     def __repr__(self):
         return '<LinearActivation>'

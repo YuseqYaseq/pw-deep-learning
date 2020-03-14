@@ -16,3 +16,7 @@ class Activation(ABC):
     def backward(self,
                  prev_error: np.ndarray):
         pass
+
+    @abstractmethod
+    def __dir__(self):
+        pass
