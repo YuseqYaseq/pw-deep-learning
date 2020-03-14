@@ -11,3 +11,6 @@ class LinearActivation(Activation):
     def backward(self,
                  prev_error: np.ndarray):
         return prev_error
+
+    def __dir__(self):
+        return []

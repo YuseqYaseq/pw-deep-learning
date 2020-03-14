@@ -16,3 +16,6 @@ class SigmoidActivation(Activation):
                  prev_error: np.ndarray):
         emx = np.exp(-self.last_x)
         return (emx / ((emx + 1) * (emx + 1))) * prev_error
+
+    def __dir__(self):
+        return ['last_x']

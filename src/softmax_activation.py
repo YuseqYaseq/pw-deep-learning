@@ -23,3 +23,7 @@ class SoftmaxActivation(Activation):
                 gradient[no, no] += self.last_res[ex, no]
             ret[ex] = np.sum(gradient * prev_error[ex], axis=1)[None, :]
         return ret
+
+    def __dir__(self):
+        return ['last_res']
+

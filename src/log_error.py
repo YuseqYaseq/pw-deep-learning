@@ -23,3 +23,6 @@ class LogError(Error):
             error_derivative = -(self.y - self.out) / ((1.0 - self.out) * self.out)
             error_derivative[np.isnan(error_derivative)] = 0.0
             return error_derivative
+
+    def __dir__(self):
+        return ['out', 'y']
