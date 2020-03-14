@@ -19,3 +19,6 @@ class SigmoidActivation(Activation):
 
     def __dir__(self):
         return ['last_x']
+        
+    def __repr__(self):
+        return '<SigmoidActivation>'

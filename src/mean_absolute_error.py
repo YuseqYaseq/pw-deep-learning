@@ -22,3 +22,6 @@ class MeanAbsoluteError(Error):
 
     def __dir__(self):
         return ['out', 'y']
+    
+    def __repr__(self):
+        return '<MeanAbsoluteError>'

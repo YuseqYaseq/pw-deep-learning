@@ -14,3 +14,6 @@ class LinearActivation(Activation):
 
     def __dir__(self):
         return []
+    
+    def __repr__(self):
+        return '<LinearActivation>'

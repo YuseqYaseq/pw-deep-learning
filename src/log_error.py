@@ -19,6 +19,7 @@ class LogError(Error):
             return np.average(calc)
 
     def get_derivative(self):
+
         with np.errstate(divide='ignore', invalid='ignore'):
             error_derivative = -(self.y - self.out) / ((1.0 - self.out) * self.out)
             error_derivative[np.isnan(error_derivative)] = 0.0
@@ -26,3 +27,6 @@ class LogError(Error):
 
     def __dir__(self):
         return ['out', 'y']
+
+    def __repr__(self):
+        return '<LogError>'
