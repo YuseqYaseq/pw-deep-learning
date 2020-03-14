@@ -54,3 +54,20 @@ class Network:
         for layer in list(reversed(self.layers)):
             derivative = layer.backward(derivative)
         return loss
+        
+    def validate(self,
+                 x: np.ndarray,
+                 y: np.ndarray,
+                 alpha: float,
+                 batch_size: int = 32):
+        if y.shape[0] > batch_size:
+            idx = np.random.choice(range(y.shape[0]), batch_size, replace=False)
+            x = x[idx, :]
+            y = y[idx, :]
+
+        out = self.predict(x)
+        loss = self.error_fun.get_error(out, y)
+        return loss
+        
+    def __repr__(self):
+        return 'Network({}, {})'.format(self.layers, self.error_fun)

@@ -18,3 +18,6 @@ class MeanSquaredError(Error):
     def get_derivative(self):
         error_derivative = 2 * (self.out - self.y)
         return error_derivative
+    
+    def __repr__(self):
+        return '<MeanSquaredError>'
