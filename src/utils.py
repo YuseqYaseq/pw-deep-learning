@@ -26,26 +26,35 @@ def split_dataset(train_df: pd.DataFrame,
     return train_df, valid_df
 
 
-def get_normalisation_scale(df: pd.DataFrame):
+def get_normalisation_scale(df: pd.DataFrame,
+                            regression: bool = False):
     """
     Get normalization scales. Used later in normalize_dataset().
     """
 
-    # don't scale last column (class label)
-    without_last_column = df.iloc[:, :-1]
+    
+    if regression:
+        without_last_column = df
+    else:
+        # don't scale last column (class label)
+        without_last_column = df.iloc[:, :-1]
 
     return (without_last_column.min(), without_last_column.max())
 
 def normalized_dataset(df: pd.DataFrame, 
                       df_min: pd.Series, 
-                      df_max: pd.Series):
+                      df_max: pd.Series,
+                      regression: bool = False):
     """
     Normalize dataset using calculated min and max values from get_normalisation_scale().
     """
 
     # don't modify last column (class label)
-    tmp_df = (df.iloc[:,-1]-df_min)/(df_max - df_min)
-    tmp_df['cls'] = df['cls']
+    if regression is False:
+        tmp_df = 2.0*((df.iloc[:,:-1]-df_min)/(df_max - df_min))-1.0
+        tmp_df['cls'] = df['cls']
+    else:
+        tmp_df = 2.0*((df-df_min)/(df_max - df_min))-1.0
     return  tmp_df
 
 
@@ -187,8 +196,8 @@ def plot_regression(network: Network,
     for i, x  in enumerate(xx.ravel()):
         Z[i] = network.predict(np.array([[x]]))
         
-    plt.plot(xx, Z, c='red')
-    plt.scatter(test_df['x'], test_df['y'], c='blue')
+    plt.scatter(test_df['x'], test_df['y'], c='c', alpha=0.1)
+    plt.plot(xx, Z, c='orange', linewidth=2, alpha=0.9)
     plt.show()
 
 def draw_weights(network: Network):
@@ -220,3 +229,25 @@ def draw_weights(network: Network):
     v = VisNN.DrawNN(dims, weights)
     v.draw()
     
+def calculate_accuacy(network: Network,
+                      df: pd.DataFrame,
+                      multiclass: bool = False):
+    
+    good_counter = 0
+    for i in range(len(df)):
+        z = network.predict(np.array(df.iloc[i, :-1]))
+        if multiclass:
+            good_counter += 1 if np.argmax(z, axis=1) == df['cls'][i] - 1 else 0
+        else:
+            good_counter += 1 if (z.item() > 0.5 and df['cls'][i] == 2) or ( z.item() < 0.5 and df['cls'][i] == 1) else 0
+
+    return good_counter/len(df)
+
+
+def calculate_mse(network: Network,
+                      df: pd.DataFrame):
+
+    P = network.predict(np.array(df.iloc[:, :-1]))
+    P = P.flatten()
+    return np.average((P - df.iloc[:,-1])*(P - df.iloc[:,-1]))
+
