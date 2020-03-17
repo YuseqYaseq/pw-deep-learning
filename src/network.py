@@ -14,12 +14,14 @@ class Network:
                  error_fun: Error,
                  seed: int = None):
 
+        np.random.seed(seed)
+
         self.layers = []
         for i in range(len(layers)):
             if i == 0:
-                self.layers.append(MLP(input_size, layers[i][0], layers[i][1], layers[i][2], seed))
+                self.layers.append(MLP(input_size, layers[i][0], layers[i][1], layers[i][2]))
             else:
-                self.layers.append(MLP(layers[i-1][0], layers[i][0], layers[i][1], layers[i][2], seed))
+                self.layers.append(MLP(layers[i-1][0], layers[i][0], layers[i][1], layers[i][2]))
         self.error_fun = error_fun
 
     def predict(self,
