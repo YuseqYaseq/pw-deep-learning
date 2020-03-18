@@ -11,8 +11,10 @@ class MLP(Layer):
                  activation: Activation,
                  bias: bool):
         self.w = np.random.randn(size_in, size_out) * np.sqrt(2 / (size_in + size_out))
+        self.w_momentum = 0
         if bias:
             self.b = np.random.randn(1, size_out) * np.sqrt(1 / size_out)
+            self.b_momentum = 0
         else:
             self.b = None
 
@@ -41,10 +43,13 @@ class MLP(Layer):
         return np.dot(prev_error, self.w.T) * self.w.shape[0] / self.w.shape[1]
 
     def update_parameters(self,
-                          alpha: float):
-        self.w -= alpha * self.dw
+                          alpha: float,
+                          beta: float):
+        self.w_momentum = beta * self.w_momentum - alpha * self.dw
+        self.w += self.w_momentum
         if self.b is not None:
-            self.b -= alpha * self.db
+            self.b_momentum = beta * self.b_momentum - alpha * self.db
+            self.b += self.b_momentum
 
     def __repr__(self):
         return 'Layer({}, bias={}, {})'.format(self.w.shape, False if self.b is None else True, self.a)

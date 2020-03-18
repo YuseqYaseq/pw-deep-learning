@@ -34,10 +34,11 @@ class Network:
             x: np.ndarray,
             y: np.ndarray,
             alpha: float,
+            beta: float = 0,
             batch_size: int = 32):
         loss = self.evaluate(x, y, batch_size)
         for layer in self.layers:
-            layer.update_parameters(alpha)
+            layer.update_parameters(alpha, beta)
         return loss
 
     def evaluate(self,

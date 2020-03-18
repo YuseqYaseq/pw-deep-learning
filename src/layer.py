@@ -16,5 +16,6 @@ class Layer(ABC):
 
     @abstractmethod
     def update_parameters(self,
-                          alpha: float):
+                          alpha: float,
+                          beta: float):
         pass
